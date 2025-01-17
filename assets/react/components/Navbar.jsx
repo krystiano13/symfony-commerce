@@ -1,7 +1,8 @@
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 
-export function Navbar() {
+export function Navbar({ user }) {
+    console.log(user)
     return (
         <Card
             className="p-card-navbar"
@@ -26,13 +27,27 @@ export function Navbar() {
                     gap: ".5rem"
                 }}
             >
-                <a href="/login">
-                    <Button>Log In</Button>
-                </a>
-                <a href="/register">
-                    <Button severity="secondary">Register</Button>
-                </a>
+                {
+                    (user.email == "" || user.id == -1) &&
+                    <>
+                        <a href="/login">
+                            <Button>Log In</Button>
+                        </a>
+                        <a href="/register">
+                            <Button severity="secondary">Register</Button>
+                        </a>
+                    </>
+                }
+                {
+                    user.email && user.id &&
+                    <>
+                        <h5>{ user.email }</h5>
+                        <a href="/logout">
+                            <Button>Log Out</Button>
+                        </a>
+                    </>
+                }
             </section>
         </Card>
-)
+    )
 }

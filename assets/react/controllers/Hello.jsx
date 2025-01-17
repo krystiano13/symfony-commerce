@@ -3,7 +3,7 @@ import { Layout } from "../components/Layout";
 
 export default function (props) {
     return (
-        <Layout>
+        <Layout user={props.user}>
 
         </Layout>
     )

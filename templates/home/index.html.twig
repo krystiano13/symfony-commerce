@@ -2,8 +2,9 @@
 
 {% block title %}Hello HomeController!{% endblock %}
 
+
 {% block body %}
-    <div {{ react_component('Hello', { fullName: 'Krystian' }) }}>
+    <div {{ react_component('Hello', { user: { email: app.user.email ?? "", id: app.user.id ?? -1 } }) }}>
 
     </div>
 {% endblock %}
