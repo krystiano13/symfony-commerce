@@ -26,11 +26,13 @@ export function Navbar() {
                     gap: ".5rem"
                 }}
             >
-                <Button>Log In</Button>
+                <a href="/login">
+                    <Button>Log In</Button>
+                </a>
                 <a href="/register">
                     <Button severity="secondary">Register</Button>
                 </a>
             </section>
         </Card>
-    )
+)
 }
