@@ -1,5 +1,12 @@
 import React from 'react';
+import { Layout } from "../components/Layout";
+import { Button } from 'primereact/button';
 
 export default function (props) {
-    return <div>Hello {props.fullName}</div>;
+    return (
+        <Layout>
+            <div>Hello {props.fullName}</div>
+            <Button>Hello</Button>
+        </Layout>
+    )
 }
