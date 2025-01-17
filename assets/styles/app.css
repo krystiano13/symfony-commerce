@@ -1,3 +1,20 @@
 body {
     background-color: lightgray;
 }
+
+.p-card-navbar {
+    .p-card-body {
+        padding-top: 0rem;
+        padding-bottom: 0rem;
+
+        .p-card-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            button {
+                margin: 0;
+            }
+        }
+    }
+}
