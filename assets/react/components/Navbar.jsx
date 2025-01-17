@@ -27,7 +27,9 @@ export function Navbar() {
                 }}
             >
                 <Button>Log In</Button>
-                <Button severity="secondary">Register</Button>
+                <a href="/register">
+                    <Button severity="secondary">Register</Button>
+                </a>
             </section>
         </Card>
     )
