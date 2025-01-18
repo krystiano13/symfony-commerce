@@ -10,7 +10,7 @@ export function productCard(data) {
             marginBottom: "1rem",
             marginTop: "1rem"
         }}>
-            <img src={`https://primefaces.org/cdn/primereact/images/product/${data.image}`} alt={data.name}/>
+            <img style={{ maxHeight: "12rem" }} src={`${data.imageSrc}`} alt={data.name}/>
             <div style={{
                 display: "flex",
                 flexDirection: "column",
