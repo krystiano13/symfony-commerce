@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello CartController!{% endblock %}
+
+{% block body %}
+    <div
+            style="height: 100%;"
+            {{ react_component('Cart', { user: { email: app.user.email ?? "", id: app.user.id ?? -1 } }) }}
+    >
+    </div>
+{% endblock %}
