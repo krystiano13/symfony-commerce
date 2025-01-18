@@ -30,10 +30,10 @@ export function Navbar({ user }) {
                     (user.email == "" || user.id == -1) &&
                     <>
                         <a href="/login">
-                            <Button>Log In</Button>
+                            <Button>Logowanie</Button>
                         </a>
                         <a href="/register">
-                            <Button severity="secondary">Register</Button>
+                            <Button severity="secondary">Rejestracja</Button>
                         </a>
                     </>
                 }
@@ -42,7 +42,7 @@ export function Navbar({ user }) {
                     <>
                         <h5>{ user.email }</h5>
                         <a href="/logout">
-                            <Button>Log Out</Button>
+                            <Button>Wyloguj się</Button>
                         </a>
                     </>
                 }
