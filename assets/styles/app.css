@@ -6,6 +6,11 @@ body {
     height: 100vh;
 }
 
+.p-datascroller {
+    margin-top: 1rem;
+    width: 66%;
+}
+
 .p-card-navbar {
     .p-card-body {
         padding-top: 0rem;

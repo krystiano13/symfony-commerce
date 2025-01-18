@@ -40,7 +40,10 @@ export function Navbar({ user }) {
                 {
                     user.email && user.id &&
                     <>
-                        <h5>{ user.email }</h5>
+                        <h5>{user.email}</h5>
+                        <a href="/cart">
+                            <Button severity="secondary">Koszyk</Button>
+                        </a>
                         <a href="/logout">
                             <Button>Wyloguj się</Button>
                         </a>
