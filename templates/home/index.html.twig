@@ -4,7 +4,10 @@
 
 
 {% block body %}
-    <div {{ react_component('Hello', { user: { email: app.user.email ?? "", id: app.user.id ?? -1 } }) }}>
+    <div
+            style="height: 100%;"
+            {{ react_component('Hello', { user: { email: app.user.email ?? "", id: app.user.id ?? -1 } }) }}
+    >
 
     </div>
 {% endblock %}

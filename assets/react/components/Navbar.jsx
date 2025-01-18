@@ -2,12 +2,11 @@ import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 
 export function Navbar({ user }) {
-    console.log(user)
     return (
         <Card
             className="p-card-navbar"
             style={{
-                padding: "0rem",
+                padding: "0rem"
             }}
         >
             <a style={{ textDecoration: "none", color: "#4b5563" }} href="/">
