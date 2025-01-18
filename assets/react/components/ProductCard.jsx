@@ -18,9 +18,9 @@ export function productCard(data) {
             }}>
                 <div>{data.name}</div>
                 <div>
-                    Price: ${data.price}
+                    Cena: ${data.price}
                 </div>
-                <Button>Add to Cart</Button>
+                <Button>Dodaj do koszyka</Button>
             </div>
         </div>
     )

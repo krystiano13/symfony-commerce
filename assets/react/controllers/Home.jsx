@@ -3,6 +3,29 @@ import { Layout } from "../components/Layout";
 import { productCard } from "../components/ProductCard";
 import { DataScroller } from "primereact/datascroller";
 import { Card } from "primereact/card";
+import styled from "styled-components";
+
+const Filters = styled.div`
+    margin-top: 1rem;
+    position: sticky;
+    top: 1rem;
+    height: 30rem;
+    width: 33%;
+
+    @media screen and (max-width: 1023px) {
+        width: 100%;
+        position: static;
+    }
+`;
+
+const Main = styled.main`
+    display: flex;
+    justify-content: space-between;
+    
+    @media screen and (max-width: 1023px) {
+        flex-direction: column-reverse;
+    }
+`;
 
 export default function Home(props) {
     const products = [
@@ -45,32 +68,22 @@ export default function Home(props) {
     ]
     return (
         <Layout user={props.user}>
-            <main
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                }}
-            >
+            <Main>
                 <DataScroller
                     value={products}
                     itemTemplate={productCard}
                     inline
                     rows={999}
-                    header="List of Products"
+                    header="Lista Produktów"
                 />
-                <Card
-                    style={{
-                        marginTop: "1rem",
-                        position: "sticky",
-                        top: "1rem",
-                        height: "30rem",
-                        width: "33%"
-                    }}
-                    title="Filtry"
-                >
-
-                </Card>
-            </main>
+                <Filters>
+                    <Card
+                        title="Filtry"
+                        style={{ width: "100%", height: "100%" }}
+                    >
+                    </Card>
+                </Filters>
+            </Main>
         </Layout>
     )
 }
