@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Controller\Trait\ValidationErrorTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Product;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,13 +15,29 @@ final class ProductController extends AbstractController
 {
     use ValidationErrorTrait;
 
+    private EntityManagerInterface $em;
+
+    public function __construct(EntityManagerInterface $em)
+    {
+        $this->em = $em;
+    }
+
     #[Route('/products', name: 'app_products_create', methods: ['POST'])]
     public function create(Request $request, ValidatorInterface $validator): Response
     {
         $body = $request -> getContent();
         $messages = array();
         $errors = $validator->validate($body);
-        $this->handleErrors($errors);
+        $this->handleErrors($request,$errors, $messages);
+
+        $product = new Product();
+        $product -> setName($body['name']);
+        $product -> setPrice($body['price']);
+        $product -> setAmount($body['amount']);
+        $product -> setImageSrc($body['imageSrc']);
+
+        $this -> em -> persist($product);
+        $this -> em -> flush();
 
         return $this->redirectToRoute('app_admin');
     }
