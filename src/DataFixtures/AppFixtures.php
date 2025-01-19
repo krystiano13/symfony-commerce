@@ -48,6 +48,7 @@ class AppFixtures extends Fixture
         $admin->setEmail('admin@admin.com');
         $admin->setPassword('$2a$10$/o7.iXDf4gox3KZlE2v6AezklVKbVtzersuIpvqkpLjuVigFk3Aau');
         $admin->setRoles(['ROLE_ADMIN']);
+
         $manager->persist($admin);
         $manager->flush();
     }
