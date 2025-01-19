@@ -17,7 +17,9 @@ final class ProductController extends AbstractController
     public function create(Request $request, ValidatorInterface $validator): Response
     {
         $body = $request -> getContent();
+        $messages = array();
         $errors = $validator->validate($body);
+        $this->handleErrors($errors);
 
         return $this->redirectToRoute('app_admin');
     }
