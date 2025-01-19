@@ -21,7 +21,7 @@ final class ProductController extends AbstractController
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em = $em;
+        $this -> em = $em;
     }
 
     #[Route('/products', name: 'app_products_create', methods: ['POST'])]
@@ -40,11 +40,10 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/products/{id}', name: 'app_products_update', methods: ['PATCH'])]
-    public function update($id ,Request $request, ValidatorInterface $validator, ProductRepository $pr, SerializerInterface $sr)
+    public function update(int $id ,Request $request, ValidatorInterface $validator, ProductRepository $pr, SerializerInterface $sr)
     {
         $product = $pr -> find($id);
         $messages = array();
-        $errors = array();
 
         if($product)
         {
@@ -59,15 +58,22 @@ final class ProductController extends AbstractController
             $product -> setImageSrc($updatedProduct -> getImageSrc());
 
             $this -> em -> flush();
-
         }
 
         return $this->redirectToRoute('app_admin');
     }
 
     #[Route('/products/{id}', name: 'app_products_delete', methods: ['DELETE'])]
-    public function destroy()
+    public function destroy(int $id, ProductRepository $pr)
     {
+        $product = $pr -> find($id);
+
+        if($product)
+        {
+            $this -> em -> remove($product);
+            $this -> em -> flush();
+        }
+
         return $this->redirectToRoute('app_admin');
     }
 }
