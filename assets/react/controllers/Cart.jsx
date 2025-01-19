@@ -63,65 +63,68 @@ export default function Cart(props) {
                     <Column field="amount" header="Ilość"></Column>
                     <Column field="actions" body={actionColumn} header="Akcje"></Column>
                 </DataTable>
-                <Card
-                    title="Przejdź do transakcji"
-                >
-                    <form
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "1rem"
-                        }}
+                {
+                    props.user.id !== -1 &&
+                    <Card
+                        title="Przejdź do transakcji"
                     >
-                        <section
+                        <form
                             style={{
                                 display: "flex",
-                                gap: ".5rem"
+                                flexDirection: "column",
+                                gap: "1rem"
                             }}
                         >
+                            <section
+                                style={{
+                                    display: "flex",
+                                    gap: ".5rem"
+                                }}
+                            >
+                                <InputText
+                                    name="name"
+                                    placeholder="Imię"
+                                    required={true}
+                                    style={{ width: "50%" }}
+                                />
+                                <InputText
+                                    name="surname"
+                                    placeholder="Nazwisko"
+                                    required={true}
+                                    style={{ width: "50%" }}
+                                />
+                            </section>
+                            <section
+                                style={{
+                                    display: "flex",
+                                    gap: ".5rem"
+                                }}
+                            >
+                                <InputMask
+                                    mask="99-999"
+                                    placeholder="Kod Pocztowy"
+                                    name="postal_code"
+                                    required={true}
+                                    style={{ width: "50%" }}
+                                />
+                                <InputText
+                                    name="town"
+                                    placeholder="Miejscowość"
+                                    required={true}
+                                    style={{ width: "50%" }}
+                                />
+                            </section>
                             <InputText
-                                name="name"
-                                placeholder="Imię"
+                                name="address"
+                                placeholder="Ulica"
                                 required={true}
-                                style={{ width: "50%" }}
                             />
-                            <InputText
-                                name="surname"
-                                placeholder="Nazwisko"
-                                required={true}
-                                style={{ width: "50%" }}
-                            />
-                        </section>
-                        <section
-                            style={{
-                                display: "flex",
-                                gap: ".5rem"
-                            }}
-                        >
-                            <InputMask
-                                mask="99-999"
-                                placeholder="Kod Pocztowy"
-                                name="postal_code"
-                                required={true}
-                                style={{ width: "50%" }}
-                            />
-                            <InputText
-                                name="town"
-                                placeholder="Miejscowość"
-                                required={true}
-                                style={{ width: "50%" }}
-                            />
-                        </section>
-                        <InputText
-                            name="address"
-                            placeholder="Ulica"
-                            required={true}
-                        />
-                        <Button>
-                            Złóż zamówienie
-                        </Button>
-                    </form>
-                </Card>
+                            <Button>
+                                Złóż zamówienie
+                            </Button>
+                        </form>
+                    </Card>
+                }
             </Main>
         </Layout>
     )
