@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\Trait\ValidationErrorTrait;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Product;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,8 +40,28 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/products/{id}', name: 'app_products_update', methods: ['PATCH'])]
-    public function update()
+    public function update($id ,Request $request, ValidatorInterface $validator, ProductRepository $pr, SerializerInterface $sr)
     {
+        $product = $pr -> find($id);
+        $messages = array();
+        $errors = array();
+
+        if($product)
+        {
+            $body = $request -> getContent();
+            $updatedProduct = $sr -> deserialize($body, Product::class, 'json');
+            $errors = $validator->validate($body);
+            $this -> handleErrors($request,$errors, $messages);
+
+            $product -> setName($updatedProduct -> getName());
+            $product -> setPrice($updatedProduct -> getPrice());
+            $product -> setAmount($updatedProduct -> getAmount());
+            $product -> setImageSrc($updatedProduct -> getImageSrc());
+
+            $this -> em -> flush();
+
+        }
+
         return $this->redirectToRoute('app_admin');
     }
 
