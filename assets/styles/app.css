@@ -21,13 +21,32 @@ body {
         padding-top: 0rem;
         padding-bottom: 0rem;
 
+        @media screen and (max-width: 1023px) {
+            padding: 0rem;
+        }
+
         .p-card-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
 
+            a {
+                h4 {
+                    margin: 0;
+                    padding: 0;
+
+                    @media screen and (max-width: 1023px) {
+                        margin-left: 1.25rem;
+                    }
+                }
+            }
+
             button {
                 margin: 0;
+
+                @media screen and (max-width: 1023px) {
+                    margin-right: 1.25rem;
+                }
             }
         }
     }
