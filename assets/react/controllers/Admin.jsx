@@ -6,6 +6,10 @@ import { Card } from "primereact/card";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
+import { Dialog } from 'primereact/dialog';
+import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
+import { FileUpload } from "primereact/fileupload";
 
 const Main = styled.main`
     width: 100%;
@@ -19,6 +23,7 @@ export default function Admin(props) {
     const [products] = useState(JSON.parse(props.products));
     const [orders] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
+    const [createFormOpen, setCreateFormOpen] = useState(false);
 
     const menuItems = useMemo(() => [
         { label: "Lista Produktów" },
@@ -42,6 +47,16 @@ export default function Admin(props) {
 
     return (
         <Layout user={props.user}>
+            <Dialog
+                header="Stwórz nowy produkt"
+                visible={createFormOpen}
+                onHide={() => setCreateFormOpen(false)}
+            >
+                <form>
+
+                </form>
+            </Dialog>
+
             <TabMenu
                 style={{ marginTop: "1rem" }}
                 model={menuItems}
@@ -58,7 +73,10 @@ export default function Admin(props) {
                             <Column field="amount" header="Ilość w magazynie"></Column>
                             <Column header="Akcje" body={productAction}></Column>
                         </DataTable>
-                        <Button style={{ marginTop: "2rem" }}>
+                        <Button
+                            onClick={() => setCreateFormOpen(prev => !prev)}
+                            style={{ marginTop: "2rem" }}
+                        >
                             Dodaj Nowy Produkt
                         </Button>
                     </Card>
