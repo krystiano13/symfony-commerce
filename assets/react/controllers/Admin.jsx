@@ -17,6 +17,7 @@ const Main = styled.main`
 
 export default function Admin(props) {
     const [products] = useState(JSON.parse(props.products));
+    const [orders] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
 
     const menuItems = useMemo(() => [
@@ -32,6 +33,12 @@ export default function Admin(props) {
             </section>
         )
     }, []);
+
+    const orderAction = useCallback(() => {
+        return (
+            <Button>Oznacz jako zrealizowany</Button>
+        )
+    }, [])
 
     return (
         <Layout user={props.user}>
@@ -56,7 +63,18 @@ export default function Admin(props) {
                         </Button>
                     </Card>
                 </> }
-                { tabIndex == 1 && <Card></Card>  }
+                { tabIndex == 1 && <>
+                    <Card style={{ width: "100%" }}>
+                        <DataTable value={orders}>
+                            <Column header="Imię"></Column>
+                            <Column header="Nazwisko"></Column>
+                            <Column header="Adres"></Column>
+                            <Column header="Kod Pocztowy"></Column>
+                            <Column header="Cena"></Column>
+                            <Column header="Akcje" body={orderAction}></Column>
+                        </DataTable>
+                    </Card>
+                </>  }
             </Main>
         </Layout>
     )
