@@ -21,11 +21,11 @@ final class HomeController extends AbstractController
     public function index(SerializerInterface $serializer): Response
     {
         $products = $this->productRepository->findAll();
-        $productsSerialized =  $serializer->serialize($products, 'json');
+        $productsSerialized = $serializer->serialize($products, 'json');
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
-            'products' => $productsSerialized
+            'products' => $productsSerialized,
         ]);
     }
 }

@@ -12,8 +12,8 @@ class SecurityController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        $usr = $this -> getUser();
-        if($usr) {
+        $usr = $this->getUser();
+        if ($usr) {
             return $this->redirectToRoute('app_home');
         }
 
