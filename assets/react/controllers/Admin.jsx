@@ -27,6 +27,7 @@ export default function Admin(props) {
     const [tabIndex, setTabIndex] = useState(0);
     const [createFormOpen, setCreateFormOpen] = useState(false);
     const [editFormOpen, setEditFormOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const menuItems = useMemo(() => [
         { label: "Lista Produktów" },
@@ -66,6 +67,22 @@ export default function Admin(props) {
         )
     }, [])
 
+    async function handleCreate(e) {
+        e.preventDefault();
+        const data = new FormData(e.target);
+
+        data.append("image", selectedFile);
+
+        await fetch('/products', {
+            method: "POST",
+            body: data
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+            })
+    }
+
     useEffect(() => {
         fetch('/products', { method: "GET" })
             .then(res => res.json())
@@ -87,9 +104,8 @@ export default function Admin(props) {
                 }}
             >
                 <form
-                    method="POST"
-                    action="/products"
                     encType="multipart/form-data"
+                    onSubmit={handleCreate}
                     style={{
                         display: "flex",
                         flexDirection: "column",
@@ -119,14 +135,15 @@ export default function Admin(props) {
                         style={{ width: "100%" }}
                     />
                     <FileUpload
-                        name="imageSrc"
+                        onSelect={(e) => {
+                            setSelectedFile(e.files[0])
+                        }}
                         mode="basic"
                         accept="image/*"
                         style={{ width: "100%" }}
                         chooseLabel="Wybierz obrazek"
                         cancelLabel="Usuń obrazek"
                         uploadLabel="Wyślij obrazek"
-                        required
                     />
                     <Button
                         style={{

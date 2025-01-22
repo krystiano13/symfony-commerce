@@ -19,10 +19,7 @@ trait ValidationErrorTrait
         }
 
         if (count($messages) > 0) {
-            $prevRoute = $request->headers->get('referer');
-
-            return $this->redirectToRoute(
-                $prevRoute,
+            return $this->json(
                 ['errors' => $messages],
                 Response::HTTP_BAD_REQUEST
             );

@@ -42,19 +42,39 @@ final class ProductController extends AbstractController
     #[Route('/products', name: 'app_products_create', methods: ['POST'])]
     public function create(Request $request): Response
     {
-        $body = $request->getContent();
-        $product = $this->serializer->deserialize($body, Product::class, 'json');
+        $body = [
+            "name" => $request->request->get('name'),
+            "amount" => $request->request->get('amount'),
+            "price" => $request->request->get('price'),
+        ];
 
-        dd($product);
+        $file = $request->files->get('image');
 
         $messages = [];
         $errors = $this->validator->validate($body);
         $this->handleErrors($request, $errors, $messages);
 
+        $product = new Product();
+        $product->setName($request->request->get('name'));
+        $product->setAmount($request->request->get('amount'));
+        $product->setPrice($request->request->get('price'));
+
+        $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/images/';
+
+        try {
+            $filename = md5(uniqid()) . '.' . $file->guessExtension();
+            $file->move($uploadsDirectory, $filename);
+            $product->setImageSrc("/images/" . $filename);
+        } catch (FileException $e) {
+            return $this->json(['error' => 'Failed to upload file'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         $this->em->persist($product);
         $this->em->flush();
 
-        return $this->redirectToRoute('app_admin');
+        return $this->json([
+            "product" => $body,
+        ], Response::HTTP_CREATED);
     }
 
     #[Route('/products/{id}', name: 'app_products_update', methods: ['PATCH'])]
