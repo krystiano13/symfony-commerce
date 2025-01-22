@@ -24,6 +24,7 @@ export default function Admin(props) {
     const [orders] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [createFormOpen, setCreateFormOpen] = useState(false);
+    const [editFormOpen, setEditFormOpen] = useState(false);
 
     const menuItems = useMemo(() => [
         { label: "Lista Produktów" },
@@ -48,10 +49,13 @@ export default function Admin(props) {
     return (
         <Layout user={props.user}>
             <Dialog
-                header="Stwórz nowy produkt"
+                header={ editFormOpen ? "Edytuj Produkt" : "Stwórz nowy produkt" }
                 style={{ width: "30rem" }}
-                visible={createFormOpen}
-                onHide={() => setCreateFormOpen(false)}
+                visible={createFormOpen || editFormOpen}
+                onHide={() => {
+                    setCreateFormOpen(false)
+                    setEditFormOpen(false)
+                }}
             >
                 <form
                     style={{
@@ -92,6 +96,18 @@ export default function Admin(props) {
                         uploadLabel="Wyślij obrazek"
                         required
                     />
+                    <Button
+                        style={{
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                        type="submit"
+                        severity="secondary"
+                    >
+                        { editFormOpen ? "Zapisz" : "Dodaj" }
+                    </Button>
                 </form>
             </Dialog>
 

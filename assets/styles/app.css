@@ -6,6 +6,12 @@ body {
     height: 100vh;
 }
 
+.p-fileupload {
+    .p-button {
+        width: 100%;
+    }
+}
+
 .p-datascroller {
     margin-top: 1rem;
     width: 66%;
