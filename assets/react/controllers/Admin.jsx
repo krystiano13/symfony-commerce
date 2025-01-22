@@ -1,5 +1,5 @@
 import { Layout } from "../components/Layout";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { TabMenu } from "primereact/tabmenu";
 import { Card } from "primereact/card";
@@ -22,7 +22,7 @@ const Main = styled.main`
 `;
 
 export default function Admin(props) {
-    const [products] = useState(JSON.parse(props.products));
+    const [products, setProducts] = useState([]);
     const [orders] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [createFormOpen, setCreateFormOpen] = useState(false);
@@ -66,6 +66,14 @@ export default function Admin(props) {
         )
     }, [])
 
+    useEffect(() => {
+        fetch('/products', { method: "GET" })
+            .then(res => res.json())
+            .then(data => {
+                setProducts([...data.products]);
+            })
+    }, [])
+
     return (
         <Layout user={props.user}>
             <ConfirmPopup />
@@ -79,6 +87,9 @@ export default function Admin(props) {
                 }}
             >
                 <form
+                    method="POST"
+                    action="/products"
+                    encType="multipart/form-data"
                     style={{
                         display: "flex",
                         flexDirection: "column",

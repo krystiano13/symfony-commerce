@@ -30,11 +30,23 @@ final class ProductController extends AbstractController
         $this->pr = $this->em->getRepository(Product::class);
     }
 
+    #[Route('/products', name: 'app_product_index', methods: ['GET', 'HEAD'])]
+    public function index(Request $request): Response
+    {
+        $products = $this->pr->findAll();
+        return $this->json([
+            'products' => $products,
+        ], Response::HTTP_OK);
+    }
+
     #[Route('/products', name: 'app_products_create', methods: ['POST'])]
     public function create(Request $request): Response
     {
         $body = $request->getContent();
         $product = $this->serializer->deserialize($body, Product::class, 'json');
+
+        dd($product);
+
         $messages = [];
         $errors = $this->validator->validate($body);
         $this->handleErrors($request, $errors, $messages);
