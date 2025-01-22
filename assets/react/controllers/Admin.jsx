@@ -1,5 +1,5 @@
 import { Layout } from "../components/Layout";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { TabMenu } from "primereact/tabmenu";
 import { Card } from "primereact/card";
@@ -10,8 +10,9 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { FileUpload } from "primereact/fileupload";
-import { ConfirmPopup } from 'primereact/confirmpopup'; // To use <ConfirmPopup> tag
-import { confirmPopup } from 'primereact/confirmpopup'; // To use confirmPopup method
+import { Toast } from 'primereact/toast';
+import { ConfirmPopup } from 'primereact/confirmpopup';
+import { confirmPopup } from 'primereact/confirmpopup';
 
 const Main = styled.main`
     width: 100%;
@@ -28,6 +29,8 @@ export default function Admin(props) {
     const [createFormOpen, setCreateFormOpen] = useState(false);
     const [editFormOpen, setEditFormOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+
+    const toastRef = useRef(null);
 
     const menuItems = useMemo(() => [
         { label: "Lista Produktów" },
@@ -67,6 +70,14 @@ export default function Admin(props) {
         )
     }, [])
 
+    function getProducts() {
+        fetch('/products', { method: "GET" })
+            .then(res => res.json())
+            .then(data => {
+                setProducts([...data.products]);
+            })
+    }
+
     async function handleCreate(e) {
         e.preventDefault();
         const data = new FormData(e.target);
@@ -77,22 +88,35 @@ export default function Admin(props) {
             method: "POST",
             body: data
         })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
+            .then(res => {
+                setCreateFormOpen(false);
+                if(res.ok) {
+                    getProducts();
+                    toastRef.current.show({
+                        severity:'success',
+                        summary: 'Sukces',
+                        detail:'Produkt utworzony',
+                        life: 3000
+                    });
+                }
+                else {
+                    toastRef.current.show({
+                        severity:'error',
+                        summary: 'Błąd',
+                        detail:'Coś poszło nie tak',
+                        life: 3000
+                    });
+                }
             })
     }
 
     useEffect(() => {
-        fetch('/products', { method: "GET" })
-            .then(res => res.json())
-            .then(data => {
-                setProducts([...data.products]);
-            })
+      getProducts();
     }, [])
 
     return (
         <Layout user={props.user}>
+            <Toast ref={toastRef} />
             <ConfirmPopup />
             <Dialog
                 header={ editFormOpen ? "Edytuj Produkt" : "Stwórz nowy produkt" }
