@@ -34,7 +34,7 @@ export default function Admin(props) {
     const productAction = useCallback(() => {
         return (
             <section style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-                <Button>Edytuj</Button>
+                <Button onClick={() => setEditFormOpen(true)}>Edytuj</Button>
                 <Button severity="danger">Usuń</Button>
             </section>
         )
@@ -128,7 +128,7 @@ export default function Admin(props) {
                             <Column header="Akcje" body={productAction}></Column>
                         </DataTable>
                         <Button
-                            onClick={() => setCreateFormOpen(prev => !prev)}
+                            onClick={() => setCreateFormOpen(true)}
                             style={{ marginTop: "2rem" }}
                         >
                             Dodaj Nowy Produkt
