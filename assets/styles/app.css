@@ -12,6 +12,10 @@ body {
     }
 }
 
+.p-skeleton {
+    margin-bottom: .5rem;
+}
+
 .p-datascroller {
     margin-top: 1rem;
     width: 66%;

@@ -13,6 +13,7 @@ import { FileUpload } from "primereact/fileupload";
 import { Toast } from 'primereact/toast';
 import { ConfirmPopup } from 'primereact/confirmpopup';
 import { confirmPopup } from 'primereact/confirmpopup';
+import { Skeleton } from 'primereact/skeleton';
 
 const Main = styled.main`
     width: 100%;
@@ -29,6 +30,7 @@ export default function Admin(props) {
     const [createFormOpen, setCreateFormOpen] = useState(false);
     const [editFormOpen, setEditFormOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [productsLoading, setProductsLoading] = useState(false);
 
     const toastRef = useRef(null);
 
@@ -71,10 +73,12 @@ export default function Admin(props) {
     }, [])
 
     function getProducts() {
+        setProductsLoading(true);
         fetch('/products', { method: "GET" })
             .then(res => res.json())
             .then(data => {
                 setProducts([...data.products]);
+                setProductsLoading(false);
             })
     }
 
@@ -194,18 +198,37 @@ export default function Admin(props) {
             <Main>
                 { tabIndex == 0 && <>
                     <Card style={{ width: "100%" }}>
-                        <DataTable value={products}>
-                            <Column field="name" header="Nazwa Produktu"></Column>
-                            <Column field="price" header="Cena"></Column>
-                            <Column field="amount" header="Ilość w magazynie"></Column>
-                            <Column header="Akcje" body={productAction}></Column>
-                        </DataTable>
-                        <Button
-                            onClick={() => setCreateFormOpen(true)}
-                            style={{ marginTop: "2rem" }}
-                        >
-                            Dodaj Nowy Produkt
-                        </Button>
+                        {
+                            productsLoading &&
+                            <>
+                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+                            </>
+                        }
+                        {
+                            !productsLoading &&
+                            <>
+                                <DataTable value={products}>
+                                    <Column field="name" header="Nazwa Produktu"></Column>
+                                    <Column field="price" header="Cena"></Column>
+                                    <Column field="amount" header="Ilość w magazynie"></Column>
+                                    <Column header="Akcje" body={productAction}></Column>
+                                </DataTable>
+                                <Button
+                                    onClick={() => setCreateFormOpen(true)}
+                                    style={{ marginTop: "2rem" }}
+                                >
+                                    Dodaj Nowy Produkt
+                                </Button>
+                            </>
+                        }
                     </Card>
                 </> }
                 { tabIndex == 1 && <>
