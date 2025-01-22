@@ -110,6 +110,6 @@ final class ProductController extends AbstractController
             $this->em->flush();
         }
 
-        return $this->redirectToRoute('app_admin');
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -39,15 +39,15 @@ export default function Admin(props) {
         { label: "Zamówienia" }
     ], []);
 
-    const productAction = useCallback(() => {
-        function handleDelete(event) {
+    const productAction = useCallback((id) => {
+        function handleClick(event) {
             confirmPopup({
                 target: event.currentTarget,
                 message: "Czy jesteś tego pewien ?",
                 icon: 'pi pi-exclamation-triangle',
                 acceptLabel: "Tak",
                 rejectLabel: "Nie",
-                accept: () => {},
+                accept: () => handleDelete(id),
                 reject: () => {}
             });
         }
@@ -56,7 +56,7 @@ export default function Admin(props) {
             <section style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
                 <Button onClick={() => setEditFormOpen(true)}>Edytuj</Button>
                 <Button
-                    onClick={handleDelete}
+                    onClick={handleClick}
                     className="p-button-danger"
                     severity="danger"
                 >
@@ -111,6 +111,13 @@ export default function Admin(props) {
                         life: 3000
                     });
                 }
+            })
+    }
+
+    async function handleDelete(id) {
+        await fetch(`/products/${id}`, { method: "DELETE" })
+            .then(res => {
+                getProducts();
             })
     }
 
@@ -219,7 +226,7 @@ export default function Admin(props) {
                                     <Column field="name" header="Nazwa Produktu"></Column>
                                     <Column field="price" header="Cena"></Column>
                                     <Column field="amount" header="Ilość w magazynie"></Column>
-                                    <Column header="Akcje" body={productAction}></Column>
+                                    <Column header="Akcje" body={(rowData) => productAction(rowData.id)}></Column>
                                 </DataTable>
                                 <Button
                                     onClick={() => setCreateFormOpen(true)}
