@@ -49,11 +49,49 @@ export default function Admin(props) {
         <Layout user={props.user}>
             <Dialog
                 header="Stwórz nowy produkt"
+                style={{ width: "30rem" }}
                 visible={createFormOpen}
                 onHide={() => setCreateFormOpen(false)}
             >
-                <form>
-
+                <form
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: ".5rem",
+                        width: "100%"
+                    }}
+                >
+                    <InputText
+                        name="name"
+                        required
+                        placeholder="Nazwa Produktu"
+                        style={{ width: "100%" }}
+                    />
+                    <InputNumber
+                        name="price"
+                        required
+                        min={0.01}
+                        placeholder="Cena"
+                        style={{ width: "100%" }}
+                    />
+                    <InputNumber
+                        name="amount"
+                        required
+                        min={0}
+                        placeholder="Ilość"
+                        style={{ width: "100%" }}
+                    />
+                    <FileUpload
+                        name="imageSrc"
+                        mode="basic"
+                        accept="image/*"
+                        style={{ width: "100%" }}
+                        chooseLabel="Wybierz obrazek"
+                        cancelLabel="Usuń obrazek"
+                        uploadLabel="Wyślij obrazek"
+                        required
+                    />
                 </form>
             </Dialog>
 
