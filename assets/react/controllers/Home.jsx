@@ -20,10 +20,10 @@ const FilterInputWrapper = styled.div`
 
 const Filters = styled.div`
     margin-top: 1rem;
-    position: sticky;
-    top: 1rem;
+    position: fixed;
     height: 30rem;
     width: 33%;
+    margin-left: 66%;
 
     @media screen and (max-width: 1023px) {
         width: 100%;
