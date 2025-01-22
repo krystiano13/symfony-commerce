@@ -10,6 +10,8 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { FileUpload } from "primereact/fileupload";
+import { ConfirmPopup } from 'primereact/confirmpopup'; // To use <ConfirmPopup> tag
+import { confirmPopup } from 'primereact/confirmpopup'; // To use confirmPopup method
 
 const Main = styled.main`
     width: 100%;
@@ -32,10 +34,28 @@ export default function Admin(props) {
     ], []);
 
     const productAction = useCallback(() => {
+        function handleDelete(event) {
+            confirmPopup({
+                target: event.currentTarget,
+                message: "Czy jesteś tego pewien ?",
+                icon: 'pi pi-exclamation-triangle',
+                acceptLabel: "Tak",
+                rejectLabel: "Nie",
+                accept: () => {},
+                reject: () => {}
+            });
+        }
+
         return (
             <section style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
                 <Button onClick={() => setEditFormOpen(true)}>Edytuj</Button>
-                <Button severity="danger">Usuń</Button>
+                <Button
+                    onClick={handleDelete}
+                    className="p-button-danger"
+                    severity="danger"
+                >
+                    Usuń
+                </Button>
             </section>
         )
     }, []);
@@ -48,6 +68,7 @@ export default function Admin(props) {
 
     return (
         <Layout user={props.user}>
+            <ConfirmPopup />
             <Dialog
                 header={ editFormOpen ? "Edytuj Produkt" : "Stwórz nowy produkt" }
                 style={{ width: "30rem" }}
