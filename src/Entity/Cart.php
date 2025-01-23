@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\CartRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CartRepository::class)]
@@ -15,19 +13,16 @@ class Cart
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'carts')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $user_id = null;
 
-    /**
-     * @var Collection<int, Product>
-     */
-    #[ORM\ManyToMany(targetEntity: Product::class)]
-    private Collection $product_id;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product_id = null;
 
-    public function __construct()
-    {
-        $this->product_id = new ArrayCollection();
-    }
+    #[ORM\Column]
+    private ?int $amount = null;
 
     public function getId(): ?int
     {
@@ -46,26 +41,26 @@ class Cart
         return $this;
     }
 
-    /**
-     * @return Collection<int, Product>
-     */
-    public function getProductId(): Collection
+    public function getProductId(): ?Product
     {
         return $this->product_id;
     }
 
-    public function addProductId(Product $productId): static
+    public function setProductId(?Product $product_id): static
     {
-        if (!$this->product_id->contains($productId)) {
-            $this->product_id->add($productId);
-        }
+        $this->product_id = $product_id;
 
         return $this;
     }
 
-    public function removeProductId(Product $productId): static
+    public function getAmount(): ?int
     {
-        $this->product_id->removeElement($productId);
+        return $this->amount;
+    }
+
+    public function setAmount(int $amount): static
+    {
+        $this->amount = $amount;
 
         return $this;
     }

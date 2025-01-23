@@ -65,8 +65,8 @@ final class CartController extends AbstractController
             $updatedCart = $this->serializer->deserialize($body, Cart::class, 'json');
             $errors = $this -> validator->validate($updatedCart);
             $this->handleErrors($request, $errors, $messages);
-
-            //TODO: After fixing entity add updating here
+            
+            $cart->setAmount($updatedCart->getAmount());
 
             $this->entityManager->flush();
             return $this->json($cart, Response::HTTP_OK);
