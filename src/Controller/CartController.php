@@ -49,7 +49,9 @@ final class CartController extends AbstractController
         $this->entityManager->persist($cart);
         $this->entityManager->flush();
 
-        return $this->json($cart, Response::HTTP_CREATED);
+        return $this->json([
+            "cart" => $cart
+        ], Response::HTTP_CREATED);
     }
 
     #[Route('/cart/{id}', name: 'app_cart_update', methods: ['PATCH'])]
@@ -69,7 +71,9 @@ final class CartController extends AbstractController
             $cart->setAmount($updatedCart->getAmount());
 
             $this->entityManager->flush();
-            return $this->json($cart, Response::HTTP_OK);
+            return $this->json([
+                "cart" => $updatedCart
+            ], Response::HTTP_OK);
         }
 
         return $this->json(["errors" => ["Cart Not Found"]], Response::HTTP_NOT_FOUND);
