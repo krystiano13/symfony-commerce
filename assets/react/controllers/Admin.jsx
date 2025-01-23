@@ -33,6 +33,10 @@ export default function Admin(props) {
     const [productsLoading, setProductsLoading] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(-1);
 
+    const [name, setName] = useState();
+    const [amount, setAmount] = useState();
+    const [price, setPrice] = useState();
+
     const toastRef = useRef(null);
 
     const menuItems = useMemo(() => [
@@ -40,7 +44,7 @@ export default function Admin(props) {
         { label: "Zamówienia" }
     ], []);
 
-    const productAction = useCallback((id) => {
+    const productAction = useCallback((product) => {
         function handleClick(event) {
             confirmPopup({
                 target: event.currentTarget,
@@ -48,7 +52,7 @@ export default function Admin(props) {
                 icon: 'pi pi-exclamation-triangle',
                 acceptLabel: "Tak",
                 rejectLabel: "Nie",
-                accept: () => handleDelete(id),
+                accept: () => handleDelete(product.id),
                 reject: () => {}
             });
         }
@@ -57,9 +61,12 @@ export default function Admin(props) {
             <section style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
                 <Button
                     onClick={() => {
-                    setEditFormOpen(true)
-                    setSelectedProduct(id)
-                }}
+                        setEditFormOpen(true);
+                        setSelectedProduct(product.id);
+                        setName(product.name);
+                        setPrice(product.price);
+                        setAmount(product.amount);
+                    }}
                 >
                     Edytuj
                 </Button>
@@ -165,12 +172,16 @@ export default function Admin(props) {
                     <InputText
                         name="name"
                         required
+                        value={name}
+                        onInput={(e) => setName(e.currentTarget.value)}
                         placeholder="Nazwa Produktu"
                         style={{ width: "100%" }}
                     />
                     <InputNumber
                         name="price"
                         required
+                        value={price}
+                        onInput={(e) => setPrice(e.currentTarget.value)}
                         min={0.01}
                         placeholder="Cena"
                         style={{ width: "100%" }}
@@ -180,6 +191,8 @@ export default function Admin(props) {
                         required
                         min={0}
                         placeholder="Ilość"
+                        value={amount}
+                        onInput={(e) => setAmount(e.currentTarget.value)}
                         style={{ width: "100%" }}
                     />
                     <FileUpload
@@ -239,10 +252,15 @@ export default function Admin(props) {
                                     <Column field="name" header="Nazwa Produktu"></Column>
                                     <Column field="price" header="Cena"></Column>
                                     <Column field="amount" header="Ilość w magazynie"></Column>
-                                    <Column header="Akcje" body={(rowData) => productAction(rowData.id)}></Column>
+                                    <Column header="Akcje" body={(rowData) => productAction(rowData)}></Column>
                                 </DataTable>
                                 <Button
-                                    onClick={() => setCreateFormOpen(true)}
+                                    onClick={() => {
+                                        setCreateFormOpen(true)
+                                        setName(undefined);
+                                        setPrice(undefined);
+                                        setAmount(undefined);
+                                    }}
                                     style={{ marginTop: "2rem" }}
                                 >
                                     Dodaj Nowy Produkt
