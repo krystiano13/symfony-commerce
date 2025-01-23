@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\Trait\ValidationErrorTrait;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
+use App\Service\ProductImageHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,9 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 final class ProductController extends AbstractController
 {
@@ -43,15 +41,13 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/products', name: 'app_products_create', methods: ['POST'])]
-    public function create(Request $request): Response
+    public function create(Request $request, ProductImageHandler $imageHandler): Response
     {
         $body = [
             "name" => $request->request->get('name'),
             "amount" => $request->request->get('amount'),
             "price" => $request->request->get('price'),
         ];
-
-        $file = $request->files->get('image');
 
         $messages = [];
         $errors = $this->validator->validate($body);
@@ -64,16 +60,7 @@ final class ProductController extends AbstractController
 
         $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/images/';
 
-        if($file)
-        {
-            try {
-                $filename = md5(uniqid()) . '.' . $file->guessExtension();
-                $file->move($uploadsDirectory, $filename);
-                $product->setImageSrc("/images/" . $filename);
-            } catch (FileException $e) {
-                return $this->json(['error' => 'Failed to upload file'], Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
-        }
+        $imageHandler -> handle($request, $uploadsDirectory, $product);
 
         $this->em->persist($product);
         $this->em->flush();
@@ -84,7 +71,7 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/products/{id}', name: 'app_products_update', methods: ['POST'])]
-    public function update(Request $request, int $id):Response
+    public function update(Request $request, int $id, ProductImageHandler $imageHandler):Response
     {
         $body = [
             "name" => $request->request->get('name'),
@@ -96,7 +83,6 @@ final class ProductController extends AbstractController
         $messages = [];
 
         if ($product) {
-            $file = $request->files->get('image');
             $errors = $this->validator->validate($body);
             $this->handleErrors($request, $errors, $messages);
 
@@ -104,22 +90,8 @@ final class ProductController extends AbstractController
             $product->setAmount($request->request->get('amount'));
             $product->setPrice($request->request->get('price'));
 
-            if($file) {
-                $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/images/';
-
-                try {
-                    $filename = md5(uniqid()) . '.' . $file->guessExtension();
-                    $file->move($uploadsDirectory, $filename);
-                    $product->setImageSrc("/images/" . $filename);
-
-                    return $this->json([
-                        "product" => $filename
-                    ], Response::HTTP_CREATED);
-                } catch (FileException $e) {
-                    return $this->json(['error' => 'Failed to upload file'], Response::HTTP_INTERNAL_SERVER_ERROR);
-                }
-            }
-
+            $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/images/';
+            $imageHandler -> handle($request, $uploadsDirectory, $product);
             $this->em->flush();
         }
 
