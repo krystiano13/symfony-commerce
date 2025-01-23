@@ -39,7 +39,7 @@ final class CartController extends AbstractController
     }
 
     #[Route('/cart', name: 'app_cart_create', methods: ['POST'])]
-    public function create(Request $request)
+    public function create(Request $request):Response
     {
         $body = $request->getContent();
         $cart = $this->serializer->deserialize($body, Cart::class, 'json');
@@ -52,15 +52,40 @@ final class CartController extends AbstractController
         return $this->json($cart, Response::HTTP_CREATED);
     }
 
-    #[Route('/cart', name: 'app_cart_update', methods: ['PATCH'])]
-    public function update()
+    #[Route('/cart/{id}', name: 'app_cart_update', methods: ['PATCH'])]
+    public function update(Request $request, int $id):Response
     {
+        $cart = $this->cartRepository->find($id);
+        $messages = array();
+        $errors = array();
 
+        if($cart)
+        {
+            $body = $request->getContent();
+            $updatedCart = $this->serializer->deserialize($body, Cart::class, 'json');
+            $errors = $this -> validator->validate($updatedCart);
+            $this->handleErrors($request, $errors, $messages);
+
+            //TODO: After fixing entity add updating here
+
+            $this->entityManager->flush();
+            return $this->json($cart, Response::HTTP_OK);
+        }
+
+        return $this->json(["errors" => ["Cart Not Found"]], Response::HTTP_NOT_FOUND);
     }
 
     #[Route('/cart/{id}', name: 'app_cart_destroy', methods: ['DELETE'])]
-    public function destroy()
+    public function destroy(int $id): Response
     {
+        $cart = $this->cartRepository->find($id);
 
+        if($cart)
+        {
+            $this->entityManager->remove($cart);
+            $this->entityManager->flush();
+        }
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }
