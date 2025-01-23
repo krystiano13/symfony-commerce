@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enums\OrderStatusEnum;
 use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -42,6 +43,9 @@ class Order
      */
     #[ORM\OneToMany(targetEntity: OrderedProduct::class, mappedBy: 'order_id')]
     private Collection $orderedProducts;
+
+    #[ORM\Column(enumType: OrderStatusEnum::class)]
+    private ?OrderStatusEnum $status = null;
 
     public function __construct()
     {
@@ -163,6 +167,18 @@ class Order
                 $orderedProduct->setOrderId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?OrderStatusEnum
+    {
+        return $this->status;
+    }
+
+    public function setStatus(OrderStatusEnum $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

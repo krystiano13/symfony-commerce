@@ -55,9 +55,27 @@ final class OrderController extends AbstractController
     }
 
     #[Route('/order/{id}', name: 'app_order_update', methods: ['PATCH'])]
-    public function update()
+    public function update(int $id, Request $request, OrderRepository $repository): Response
     {
+        $order = $repository->find($id);
+        $messages = array();
+        $errors = array();
 
+        if($order)
+        {
+            $body = $request->getContent();
+            $updatedOrder = json_decode($body, true);
+            $errors = $this -> validator->validate($updatedOrder);
+            $this -> handleErrors($request, $errors, $messages);
+
+            $this->entityManager->flush();
+
+            return $this->json([
+                "order" => $updatedOrder
+            ], Response::HTTP_OK);
+        }
+
+        return $this->json(["errors" => ["Cart Not Found"]], Response::HTTP_NOT_FOUND);
     }
 
     #[Route('/order/{id}', name: 'app_order_destroy', methods: ['DELETE'])]
