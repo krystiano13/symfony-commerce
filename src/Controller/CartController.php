@@ -65,7 +65,7 @@ final class CartController extends AbstractController
             $updatedCart = $this->serializer->deserialize($body, Cart::class, 'json');
             $errors = $this -> validator->validate($updatedCart);
             $this->handleErrors($request, $errors, $messages);
-            
+
             $cart->setAmount($updatedCart->getAmount());
 
             $this->entityManager->flush();
