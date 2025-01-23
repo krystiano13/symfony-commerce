@@ -5,7 +5,8 @@ namespace App\Controller;
 use App\Controller\Trait\ValidationErrorTrait;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
-use App\Service\ProductImageHandler;
+use App\Service\Products\ProductDataHandler;
+use App\Service\Products\ProductImageHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,8 @@ final class ProductController extends AbstractController
     private ValidatorInterface $validator;
     private SerializerInterface $serializer;
     private ProductRepository $pr;
+    private ProductImageHandler $imageHandler;
+    private ProductDataHandler $dataHandler;
 
     public function __construct(EntityManagerInterface $em, ValidatorInterface $validator, SerializerInterface $serializer)
     {
@@ -29,6 +32,8 @@ final class ProductController extends AbstractController
         $this->validator = $validator;
         $this->serializer = $serializer;
         $this->pr = $this->em->getRepository(Product::class);
+        $this->imageHandler = new ProductImageHandler();
+        $this->dataHandler = new ProductDataHandler();
     }
 
     #[Route('/products', name: 'app_product_index', methods: ['GET', 'HEAD'])]
@@ -41,26 +46,18 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/products', name: 'app_products_create', methods: ['POST'])]
-    public function create(Request $request, ProductImageHandler $imageHandler): Response
+    public function create(Request $request): Response
     {
-        $body = [
-            "name" => $request->request->get('name'),
-            "amount" => $request->request->get('amount'),
-            "price" => $request->request->get('price'),
-        ];
-
+        $body = $this -> dataHandler -> getData($request);
         $messages = [];
         $errors = $this->validator->validate($body);
         $this->handleErrors($request, $errors, $messages);
 
         $product = new Product();
-        $product->setName($request->request->get('name'));
-        $product->setAmount($request->request->get('amount'));
-        $product->setPrice($request->request->get('price'));
+        $this -> dataHandler -> setData($request, $product);
 
         $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/images/';
-
-        $imageHandler -> handle($request, $uploadsDirectory, $product);
+        $this -> imageHandler -> handle($request, $uploadsDirectory, $product);
 
         $this->em->persist($product);
         $this->em->flush();
@@ -71,27 +68,18 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/products/{id}', name: 'app_products_update', methods: ['POST'])]
-    public function update(Request $request, int $id, ProductImageHandler $imageHandler):Response
+    public function update(Request $request, int $id):Response
     {
-        $body = [
-            "name" => $request->request->get('name'),
-            "amount" => $request->request->get('amount'),
-            "price" => $request->request->get('price'),
-        ];
-
+        $body = $this -> dataHandler -> getData($request);
         $product = $this->pr->find($id);
         $messages = [];
 
         if ($product) {
             $errors = $this->validator->validate($body);
             $this->handleErrors($request, $errors, $messages);
-
-            $product->setName($request->request->get('name'));
-            $product->setAmount($request->request->get('amount'));
-            $product->setPrice($request->request->get('price'));
-
+            $this -> dataHandler -> setData($request, $product);
             $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/images/';
-            $imageHandler -> handle($request, $uploadsDirectory, $product);
+            $this -> imageHandler -> handle($request, $uploadsDirectory, $product);
             $this->em->flush();
         }
 

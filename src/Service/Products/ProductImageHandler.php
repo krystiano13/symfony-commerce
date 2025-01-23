@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Products;
 
 use App\Entity\Product;
+use App\Service\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
