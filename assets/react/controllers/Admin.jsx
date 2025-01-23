@@ -31,6 +31,7 @@ export default function Admin(props) {
     const [editFormOpen, setEditFormOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [productsLoading, setProductsLoading] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(-1);
 
     const toastRef = useRef(null);
 
@@ -54,7 +55,14 @@ export default function Admin(props) {
 
         return (
             <section style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-                <Button onClick={() => setEditFormOpen(true)}>Edytuj</Button>
+                <Button
+                    onClick={() => {
+                    setEditFormOpen(true)
+                    setSelectedProduct(id)
+                }}
+                >
+                    Edytuj
+                </Button>
                 <Button
                     onClick={handleClick}
                     className="p-button-danger"
@@ -82,13 +90,14 @@ export default function Admin(props) {
             })
     }
 
-    async function handleCreate(e) {
+    async function handleCreate(e, id = -1) {
         e.preventDefault();
         const data = new FormData(e.target);
 
         data.append("image", selectedFile);
+        console.log(createFormOpen ? '/products' : `/products/${id}`)
 
-        await fetch('/products', {
+        await fetch(createFormOpen ? '/products' : `/products/${id}`, {
             method: "POST",
             body: data
         })
@@ -111,6 +120,10 @@ export default function Admin(props) {
                         life: 3000
                     });
                 }
+                return res.json();
+            })
+            .then(data => {
+                console.log(data)
             })
     }
 
@@ -140,7 +153,7 @@ export default function Admin(props) {
             >
                 <form
                     encType="multipart/form-data"
-                    onSubmit={handleCreate}
+                    onSubmit={(e) => handleCreate(e, selectedProduct)}
                     style={{
                         display: "flex",
                         flexDirection: "column",

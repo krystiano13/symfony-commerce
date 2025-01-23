@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 final class ProductController extends AbstractController
 {
@@ -61,12 +64,15 @@ final class ProductController extends AbstractController
 
         $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/images/';
 
-        try {
-            $filename = md5(uniqid()) . '.' . $file->guessExtension();
-            $file->move($uploadsDirectory, $filename);
-            $product->setImageSrc("/images/" . $filename);
-        } catch (FileException $e) {
-            return $this->json(['error' => 'Failed to upload file'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        if($file)
+        {
+            try {
+                $filename = md5(uniqid()) . '.' . $file->guessExtension();
+                $file->move($uploadsDirectory, $filename);
+                $product->setImageSrc("/images/" . $filename);
+            } catch (FileException $e) {
+                return $this->json(['error' => 'Failed to upload file'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
         }
 
         $this->em->persist($product);
@@ -77,27 +83,49 @@ final class ProductController extends AbstractController
         ], Response::HTTP_CREATED);
     }
 
-    #[Route('/products/{id}', name: 'app_products_update', methods: ['PATCH'])]
-    public function update(int $id, Request $request)
+    #[Route('/products/{id}', name: 'app_products_update', methods: ['POST'])]
+    public function update(Request $request, int $id):Response
     {
+        $body = [
+            "name" => $request->request->get('name'),
+            "amount" => $request->request->get('amount'),
+            "price" => $request->request->get('price'),
+        ];
+
         $product = $this->pr->find($id);
         $messages = [];
 
         if ($product) {
-            $body = $request->getContent();
-            $updatedProduct = $this->serializer->deserialize($body, Product::class, 'json');
+            $file = $request->files->get('image');
             $errors = $this->validator->validate($body);
             $this->handleErrors($request, $errors, $messages);
 
-            $product->setName($updatedProduct->getName());
-            $product->setPrice($updatedProduct->getPrice());
-            $product->setAmount($updatedProduct->getAmount());
-            $product->setImageSrc($updatedProduct->getImageSrc());
+            $product->setName($request->request->get('name'));
+            $product->setAmount($request->request->get('amount'));
+            $product->setPrice($request->request->get('price'));
+
+            if($file) {
+                $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/images/';
+
+                try {
+                    $filename = md5(uniqid()) . '.' . $file->guessExtension();
+                    $file->move($uploadsDirectory, $filename);
+                    $product->setImageSrc("/images/" . $filename);
+
+                    return $this->json([
+                        "product" => $filename
+                    ], Response::HTTP_CREATED);
+                } catch (FileException $e) {
+                    return $this->json(['error' => 'Failed to upload file'], Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            }
 
             $this->em->flush();
         }
 
-        return $this->redirectToRoute('app_admin');
+        return $this->json([
+            "product" => $product
+        ], Response::HTTP_CREATED);
     }
 
     #[Route('/products/{id}', name: 'app_products_delete', methods: ['DELETE'])]
