@@ -43,19 +43,28 @@ final class CartController extends AbstractController
     {
         $body = $request->getContent();
         $cart = $this->serializer->deserialize($body, Cart::class, 'json');
-
         $cart -> setAmount(1);
+
+        $cartCheck = $this->cartRepository->findBy(["user_id" => $this->getUser()->getId(), "product_id" => $cart->getProductId()]);
 
         $errors = $this -> validator->validate($cart);
         $messages = array();
         $this->handleErrors($request, $errors, $messages);
 
-        $this->entityManager->persist($cart);
+        if($cartCheck)
+        {
+            $cartCheck[0] -> setAmount($cartCheck[0] -> getAmount() + 1);
+        }
+        else
+        {
+            $this->entityManager->persist($cart);
+        }
+
         $this->entityManager->flush();
 
         return $this->json([
             "cart" => $body,
-            "messages" => $messages,
+            "messages" => $messages
         ], Response::HTTP_CREATED);
     }
 
