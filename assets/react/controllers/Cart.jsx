@@ -11,7 +11,6 @@ const Main = styled.main`
     width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;
 
     gap: 1rem;
     
@@ -58,6 +57,7 @@ export default function Cart(props) {
                     props.user.id !== -1 &&
                     <Card
                         title="Przejdź do transakcji"
+                        style={{ marginTop: "1rem" }}
                     >
                         <form
                             style={{
