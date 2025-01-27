@@ -14,13 +14,9 @@ export function productCard(data, user_id) {
             })
         }).then(res => {
             if(res.ok) {
-                //window.location.href = "/cart";
+                window.location.href = "/cart";
             }
-            return res.json();
         })
-            .then(data => {
-                console.log(data)
-            })
     }
 
     return (
@@ -41,7 +37,17 @@ export function productCard(data, user_id) {
                 <div>
                     Cena: ${data.price}
                 </div>
-                <Button onClick={() => addToCart(data.id)}>Dodaj do koszyka</Button>
+                <Button
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "12rem"
+                    }}
+                    onClick={() => addToCart(data.id)}
+                >
+                    Dodaj do koszyka
+                </Button>
             </div>
         </div>
     )
