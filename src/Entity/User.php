@@ -41,18 +41,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user_id')]
     private Collection $orders;
 
-    /**
-     * @var Collection<int, Cart>
-     */
-    #[ORM\OneToMany(targetEntity: Cart::class, mappedBy: 'user_id')]
-    private Collection $carts;
-
-    public function __construct()
-    {
-        $this->orders = new ArrayCollection();
-        $this->carts = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;

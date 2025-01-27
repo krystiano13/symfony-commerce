@@ -1,7 +1,28 @@
 import { Button } from "primereact/button";
 import React from "react";
 
-export function productCard(data) {
+export function productCard(data, user_id) {
+    async function addToCart(productId) {
+        await fetch(`/cart`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                product_id: productId
+            })
+        }).then(res => {
+            if(res.ok) {
+                //window.location.href = "/cart";
+            }
+            return res.json();
+        })
+            .then(data => {
+                console.log(data)
+            })
+    }
+
     return (
         <div style={{
             display: "flex",
@@ -20,7 +41,7 @@ export function productCard(data) {
                 <div>
                     Cena: ${data.price}
                 </div>
-                <Button>Dodaj do koszyka</Button>
+                <Button onClick={() => addToCart(data.id)}>Dodaj do koszyka</Button>
             </div>
         </div>
     )

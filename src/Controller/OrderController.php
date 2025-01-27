@@ -67,6 +67,7 @@ final class OrderController extends AbstractController
             $updatedOrder = json_decode($body, true);
             $errors = $this -> validator->validate($updatedOrder);
             $this -> handleErrors($request, $errors, $messages);
+            $order->setStatus($updatedOrder['status']);
 
             $this->entityManager->flush();
 

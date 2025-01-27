@@ -30,7 +30,7 @@ final class CartController extends AbstractController
         $this->validator = $validator;
     }
 
-    #[Route('/cart', name: 'app_cart')]
+    #[Route('/cart', name: 'app_cart', methods: ['GET'])]
     public function index(): Response
     {
         return $this->render('cart/index.html.twig', [
@@ -43,14 +43,19 @@ final class CartController extends AbstractController
     {
         $body = $request->getContent();
         $cart = $this->serializer->deserialize($body, Cart::class, 'json');
+
+        $cart -> setAmount(1);
+
         $errors = $this -> validator->validate($cart);
         $messages = array();
         $this->handleErrors($request, $errors, $messages);
+
         $this->entityManager->persist($cart);
         $this->entityManager->flush();
 
         return $this->json([
-            "cart" => $cart
+            "cart" => $body,
+            "messages" => $messages,
         ], Response::HTTP_CREATED);
     }
 

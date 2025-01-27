@@ -57,7 +57,7 @@ export default function Home(props) {
             <Main>
                 <DataScroller
                     value={products}
-                    itemTemplate={productCard}
+                    itemTemplate={(data) => productCard(data, props.user.id)}
                     inline
                     rows={999}
                     header="Lista Produktów"
