@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Layout } from "../components/Layout";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -5,6 +6,7 @@ import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputMask } from 'primereact/inputmask';
+import { Skeleton } from "primereact/skeleton";
 import styled from "styled-components";
 
 const Main = styled.main`
@@ -34,6 +36,20 @@ const Main = styled.main`
 `;
 
 export default function Cart(props) {
+    const [cartItems, setCartItems] = useState([]);
+    const [loading, setLoading] = useState(false);
+    function getCart() {
+        setLoading(true);
+        fetch('/cart/get')
+            .then(res => res.json())
+            .then(data => {
+                if(data.cart) {
+                    setCartItems([...data.cart])
+                }
+                setLoading(false);
+            })
+    }
+
     const actionColumn = (id) => {
         async function handleClick() {
             await fetch(`/cart/${id}`, {
@@ -41,7 +57,7 @@ export default function Cart(props) {
             })
                 .then(res => res.json())
                 .then(() => {
-                    window.location.reload();
+                    getCart();
                 })
         }
 
@@ -54,20 +70,43 @@ export default function Cart(props) {
         )
     }
 
+    useEffect(() => {
+        getCart();
+    }, [])
+
     return (
         <Layout user={props.user}>
             <Main>
-                <DataTable value={props.cart_items} style={{ marginTop: "1rem" }}>
-                    <Column field="name" header="Nazwa Produktu"></Column>
-                    <Column field="price" header="Cena"></Column>
-                    <Column field="amount" header="Ilość"></Column>
-                    <Column field="actions" body={(rowData) => actionColumn(rowData.id)} header="Akcje"></Column>
-                </DataTable>
+                {
+                    loading === false && (
+                        <DataTable value={cartItems} style={{ marginTop: "1rem" }}>
+                            <Column field="name" header="Nazwa Produktu"></Column>
+                            <Column field="price" header="Cena"></Column>
+                            <Column field="amount" header="Ilość"></Column>
+                            <Column field="actions" body={(rowData) => actionColumn(rowData.id)} header="Akcje"></Column>
+                        </DataTable>
+                    )
+                }
+                {
+                    loading === true &&
+                    <Card style={{
+                        width: "66%",
+                        marginTop: "1rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: ".5rem"
+                    }}>
+                        <Skeleton height="3rem"/>
+                        <Skeleton height="3rem"/>
+                        <Skeleton height="3rem"/>
+                        <Skeleton height="3rem"/>
+                    </Card>
+                }
                 {
                     props.user.id !== -1 &&
                     <Card
                         title="Przejdź do transakcji"
-                        style={{ marginTop: "1rem" }}
+                        style={{marginTop: "1rem"}}
                     >
                         <form
                             style={{

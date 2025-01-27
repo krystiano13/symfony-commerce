@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Controller\Trait\ValidationErrorTrait;
 use App\Repository\CartRepository;
-use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,9 +42,11 @@ final class CartController extends AbstractController
     public function getCart(): Response
     {
         $conn = $this->entityManager->getConnection();
-        $statement = " SELECT cart.*, product.name, product.price*cart.amount as price from cart inner join product on cart.product_id = product.id";
+        $statement = " SELECT cart.*, product.name, product.price*cart.amount as price from cart inner join product on cart.product_id = product.id WHERE cart.user_id = :user_id";
 
-        $stmt = $conn -> executeQuery($statement);
+        $stmt = $conn -> executeQuery($statement, [
+            'user_id' => $this->getUser()->getId(),
+        ]);
 
         return $this -> json([
             "cart" => $stmt->fetchAllAssociative()
@@ -118,6 +119,6 @@ final class CartController extends AbstractController
             $this->entityManager->flush();
         }
 
-        return $this->json(null, Response::HTTP_NO_CONTENT);
+        return $this->json(["message" => "deleted"], Response::HTTP_OK);
     }
 }
