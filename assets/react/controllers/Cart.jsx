@@ -34,10 +34,20 @@ const Main = styled.main`
 `;
 
 export default function Cart(props) {
-    const actionColumn = () => {
+    const actionColumn = (id) => {
+        async function handleClick() {
+            await fetch(`/cart/${id}`, {
+                method: "DELETE"
+            })
+                .then(res => res.json())
+                .then(() => {
+                    window.location.reload();
+                })
+        }
+
         return (
             <div>
-                <Button>
+                <Button onClick={handleClick}>
                     Usuń z koszyka
                 </Button>
             </div>
@@ -51,7 +61,7 @@ export default function Cart(props) {
                     <Column field="name" header="Nazwa Produktu"></Column>
                     <Column field="price" header="Cena"></Column>
                     <Column field="amount" header="Ilość"></Column>
-                    <Column field="actions" body={actionColumn} header="Akcje"></Column>
+                    <Column field="actions" body={(rowData) => actionColumn(rowData.id)} header="Akcje"></Column>
                 </DataTable>
                 {
                     props.user.id !== -1 &&

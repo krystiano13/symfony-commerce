@@ -27,7 +27,11 @@ export function productCard(data, user_id) {
             marginBottom: "1rem",
             marginTop: "1rem"
         }}>
-            <img style={{ maxHeight: "12rem" }} src={`${data.imageSrc}`} alt={data.name}/>
+            <img
+                style={{ maxHeight: "12rem" }}
+                src={`${data.imageSrc}`}
+                alt={data.name}
+            />
             <div style={{
                 display: "flex",
                 flexDirection: "column",
