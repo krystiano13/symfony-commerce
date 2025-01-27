@@ -34,15 +34,22 @@ final class CartController extends AbstractController
     #[Route('/cart', name: 'app_cart', methods: ['GET'])]
     public function index(): Response
     {
+        return $this->render('cart/index.html.twig', [
+            'controller_name' => 'CartController',
+        ]);
+    }
+
+    #[Route('/cart/get', name: 'app_cart_get', methods: ['GET'])]
+    public function getCart(): Response
+    {
         $conn = $this->entityManager->getConnection();
         $statement = " SELECT cart.*, product.name, product.price*cart.amount as price from cart inner join product on cart.product_id = product.id";
 
         $stmt = $conn -> executeQuery($statement);
 
-        return $this->render('cart/index.html.twig', [
-            'controller_name' => 'CartController',
-            'cart_items' => $stmt->fetchAllAssociative()
-        ]);
+        return $this -> json([
+            "cart" => $stmt->fetchAllAssociative()
+        ], Response::HTTP_OK);
     }
 
     #[Route('/cart', name: 'app_cart_create', methods: ['POST'])]
