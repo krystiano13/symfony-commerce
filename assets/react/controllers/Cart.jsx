@@ -45,19 +45,10 @@ export default function Cart(props) {
         )
     }
 
-    const elements = [
-        { name: "test", price: 457.99, amount: 1, actions: "" },
-        { name: "test 2", price: 657.99, amount: 3, actions: "" },
-        { name: "test", price: 457.99, amount: 1, actions: "" },
-        { name: "test 2", price: 657.99, amount: 3, actions: "" },
-        { name: "test", price: 457.99, amount: 1, actions: "" },
-        { name: "test 2", price: 657.99, amount: 3, actions: "" }
-    ];
-
     return (
         <Layout user={props.user}>
             <Main>
-                <DataTable value={elements} style={{ marginTop: "1rem" }}>
+                <DataTable value={props.cart_items} style={{ marginTop: "1rem" }}>
                     <Column field="name" header="Nazwa Produktu"></Column>
                     <Column field="price" header="Cena"></Column>
                     <Column field="amount" header="Ilość"></Column>

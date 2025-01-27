@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\Trait\ValidationErrorTrait;
 use App\Repository\CartRepository;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,8 +34,14 @@ final class CartController extends AbstractController
     #[Route('/cart', name: 'app_cart', methods: ['GET'])]
     public function index(): Response
     {
+        $conn = $this->entityManager->getConnection();
+        $statement = " SELECT cart.*, product.name, product.price*cart.amount as price from cart inner join product on cart.product_id = product.id";
+
+        $stmt = $conn -> executeQuery($statement);
+
         return $this->render('cart/index.html.twig', [
             'controller_name' => 'CartController',
+            'cart_items' => $stmt->fetchAllAssociative()
         ]);
     }
 

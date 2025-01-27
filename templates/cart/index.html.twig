@@ -5,7 +5,7 @@
 {% block body %}
     <div
             style="height: 100%;"
-            {{ react_component('Cart', { user: { email: app.user.email ?? "", id: app.user.id ?? -1 } }) }}
+            {{ react_component('Cart', { cart_items: cart_items ,user: { email: app.user.email ?? "", id: app.user.id ?? -1 } }) }}
     >
     </div>
 {% endblock %}
