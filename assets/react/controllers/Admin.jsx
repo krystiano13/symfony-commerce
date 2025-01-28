@@ -15,6 +15,20 @@ import { ConfirmPopup } from 'primereact/confirmpopup';
 import { confirmPopup } from 'primereact/confirmpopup';
 import { Skeleton } from 'primereact/skeleton';
 
+const Loader = () => (
+    <>
+        <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+        <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+        <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+        <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+        <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+        <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+        <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+        <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+        <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
+    </>
+)
+
 const Main = styled.main`
     width: 100%;
     display: flex;
@@ -31,6 +45,7 @@ export default function Admin(props) {
     const [editFormOpen, setEditFormOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [productsLoading, setProductsLoading] = useState(false);
+    const [ordersLoading, setOrdersLoading] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(-1);
 
     const [name, setName] = useState();
@@ -98,11 +113,12 @@ export default function Admin(props) {
     }
 
     function getOrders() {
+        setOrdersLoading(true);
         fetch('/order', { method: "GET" })
             .then(res => res.json())
             .then(data => {
-                //setOrders([...data.orders]);
-                console.log(data)
+                setOrders([...data.orders]);
+                setOrdersLoading(false);
             })
     }
 
@@ -242,17 +258,7 @@ export default function Admin(props) {
                     <Card style={{ width: "100%" }}>
                         {
                             productsLoading &&
-                            <>
-                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
-                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
-                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
-                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
-                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
-                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
-                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
-                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
-                                <Skeleton height="3rem" style={{ marginBottom: ".5rem" }}></Skeleton>
-                            </>
+                            <Loader />
                         }
                         {
                             !productsLoading &&
@@ -279,16 +285,23 @@ export default function Admin(props) {
                     </Card>
                 </> }
                 { tabIndex == 1 && <>
-                    <Card style={{ width: "100%" }}>
-                        <DataTable value={orders}>
-                            <Column header="Imię"></Column>
-                            <Column header="Nazwisko"></Column>
-                            <Column header="Adres"></Column>
-                            <Column header="Kod Pocztowy"></Column>
-                            <Column header="Cena"></Column>
-                            <Column header="Akcje" body={orderAction}></Column>
-                        </DataTable>
-                    </Card>
+                    {
+                        ordersLoading && <Loader />
+                    }
+                    {
+                        !ordersLoading &&
+                        <Card style={{ width: "100%" }}>
+                            <DataTable value={orders}>
+                                <Column field="name" header="Imię"></Column>
+                                <Column field="surname" header="Nazwisko"></Column>
+                                <Column field="address" header="Adres"></Column>
+                                <Column field="postalCode" header="Kod Pocztowy"></Column>
+                                <Column field="fullPrice" header="Cena"></Column>
+                                <Column field="town" header="Miejscowość"></Column>
+                                <Column header="Akcje" body={orderAction}></Column>
+                            </DataTable>
+                        </Card>
+                    }
                 </>  }
             </Main>
         </Layout>
