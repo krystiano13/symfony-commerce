@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\Trait\ValidationErrorTrait;
 use App\Repository\CartRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,25 +55,31 @@ final class CartController extends AbstractController
     }
 
     #[Route('/cart', name: 'app_cart_create', methods: ['POST'])]
-    public function create(Request $request):Response
+    public function create(Request $request, ProductRepository $productRepository):Response
     {
         $body = $request->getContent();
         $cart = $this->serializer->deserialize($body, Cart::class, 'json');
         $cart -> setAmount(1);
 
+        $product = $productRepository -> find($cart->getProductId());
         $cartCheck = $this->cartRepository->findBy(["user_id" => $this->getUser()->getId(), "product_id" => $cart->getProductId()]);
 
         $errors = $this -> validator->validate($cart);
         $messages = array();
         $this->handleErrors($request, $errors, $messages);
 
-        if($cartCheck)
+        if($product->getAmount() > 0)
         {
-            $cartCheck[0] -> setAmount($cartCheck[0] -> getAmount() + 1);
-        }
-        else
-        {
-            $this->entityManager->persist($cart);
+            if($cartCheck)
+            {
+                $cartCheck[0] -> setAmount($cartCheck[0] -> getAmount() + 1);
+            }
+            else
+            {
+                $this->entityManager->persist($cart);
+            }
+
+            $product -> setAmount($product -> getAmount() - 1);
         }
 
         $this->entityManager->flush();
@@ -109,12 +116,19 @@ final class CartController extends AbstractController
     }
 
     #[Route('/cart/{id}', name: 'app_cart_destroy', methods: ['DELETE'])]
-    public function destroy(int $id): Response
+    public function destroy(int $id, ProductRepository $productRepository): Response
     {
         $cart = $this->cartRepository->find($id);
 
         if($cart)
         {
+            $product = $productRepository -> find($cart->getProductId());
+
+            if($product)
+            {
+                $product -> setAmount($product -> getAmount() + 1);
+            }
+
             $this->entityManager->remove($cart);
             $this->entityManager->flush();
         }
