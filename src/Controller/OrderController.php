@@ -6,7 +6,7 @@ use App\Controller\Trait\ValidationErrorTrait;
 use App\Repository\CartRepository;
 use App\Repository\OrderRepository;
 use App\Entity\Order;
-use App\Repository\ProductRepository;
+use App\Enums\OrderStatusEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,24 +68,17 @@ final class OrderController extends AbstractController
     }
 
     #[Route('/order/{id}', name: 'app_order_update', methods: ['PATCH'])]
-    public function update(int $id, Request $request, OrderRepository $repository): Response
+    public function update(int $id, OrderRepository $repository): Response
     {
         $order = $repository->find($id);
-        $messages = array();
-        $errors = array();
 
         if($order)
         {
-            $body = $request->getContent();
-            $updatedOrder = json_decode($body, true);
-            $errors = $this -> validator->validate($updatedOrder);
-            $this -> handleErrors($request, $errors, $messages);
-            $order->setStatus($updatedOrder['status']);
-
+            $order->setStatus(OrderStatusEnum::Delivered);
             $this->entityManager->flush();
 
             return $this->json([
-                "order" => $updatedOrder
+                "order" => "Delivered",
             ], Response::HTTP_OK);
         }
 

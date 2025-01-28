@@ -96,9 +96,16 @@ export default function Admin(props) {
         )
     }, []);
 
-    const orderAction = useCallback(() => {
+    const orderAction = useCallback((id, status) => {
         return (
-            <Button>Oznacz jako zrealizowany</Button>
+            <Button
+                disabled={status !== "Not sent"}
+                onClick={() => handleSetAsDelivered(id)}
+            >
+                {
+                    status === "Not sent" ? "Oznacz jako zrealizowany" : "Przesyłka wysłana"
+                }
+            </Button>
         )
     }, [])
 
@@ -117,8 +124,26 @@ export default function Admin(props) {
         fetch('/order', { method: "GET" })
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 setOrders([...data.orders]);
                 setOrdersLoading(false);
+            })
+    }
+
+    async function handleSetAsDelivered(id) {
+        await fetch(`/order/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+               status: "Delivered"
+            })
+        })
+            .then(res => {
+                if(res.ok) {
+                    getOrders();
+                }
             })
     }
 
@@ -298,7 +323,7 @@ export default function Admin(props) {
                                 <Column field="postalCode" header="Kod Pocztowy"></Column>
                                 <Column field="fullPrice" header="Cena"></Column>
                                 <Column field="town" header="Miejscowość"></Column>
-                                <Column header="Akcje" body={orderAction}></Column>
+                                <Column header="Akcje" body={(rowData) => orderAction(rowData.id, rowData.status)}></Column>
                             </DataTable>
                         </Card>
                     }
