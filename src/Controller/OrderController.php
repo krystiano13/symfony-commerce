@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Controller\Trait\ValidationErrorTrait;
+use App\Repository\CartRepository;
 use App\Repository\OrderRepository;
 use App\Entity\Order;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +41,7 @@ final class OrderController extends AbstractController
     }
 
     #[Route('/order', name: 'app_order_create', methods: ['POST'])]
-    public function create(Request $request): Response
+    public function create(Request $request, CartRepository $cartRepository): Response
     {
         $messages = array();
 
@@ -50,6 +52,14 @@ final class OrderController extends AbstractController
         $this -> handleErrors($request, $errors, $messages);
 
         $this->entityManager->persist($order);
+
+        $cartItems = $cartRepository->findBy(['user_id' => $this->getUser()->getId()]);
+
+        foreach ($cartItems as $cartItem)
+        {
+            $this->entityManager->remove($cartItem);
+        }
+
         $this->entityManager->flush();
 
         return $this->json([

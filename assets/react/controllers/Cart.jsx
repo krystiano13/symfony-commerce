@@ -81,13 +81,8 @@ export default function Cart(props) {
         })
             .then(res => {
                 if(res.ok) {
-                    //window.location.reload();
+                    window.location.reload();
                 }
-                console.log(res.status);
-                return res.json();
-            })
-            .then(data => {
-                console.log(data);
             })
     }
 
