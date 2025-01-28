@@ -103,7 +103,7 @@ export default function Cart(props) {
                     </Card>
                 }
                 {
-                    props.user.id !== -1 &&
+                    props.user.id !== -1 && cartItems.length > 0 &&
                     <Card
                         title="Przejdź do transakcji"
                         style={{marginTop: "1rem"}}
