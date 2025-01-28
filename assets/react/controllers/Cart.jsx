@@ -50,6 +50,47 @@ export default function Cart(props) {
             })
     }
 
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+
+        let fullPrice = 0;
+
+        cartItems.forEach(item => {
+            fullPrice += item.price;
+        })
+
+        const body = {
+            name: formData.get("name"),
+            surname: formData.get("surname"),
+            town: formData.get("town"),
+            postal_code: formData.get("postal_code"),
+            address: formData.get("address"),
+            full_price: fullPrice,
+            status: "Not sent",
+            products: JSON.stringify(cartItems)
+        };
+
+        await fetch(`/order`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+            .then(res => {
+                if(res.ok) {
+                    //window.location.reload();
+                }
+                console.log(res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+    }
+
     const actionColumn = (id) => {
         async function handleClick() {
             await fetch(`/cart/${id}`, {
@@ -109,6 +150,7 @@ export default function Cart(props) {
                         style={{marginTop: "1rem"}}
                     >
                         <form
+                            onSubmit={handleSubmit}
                             style={{
                                 display: "flex",
                                 flexDirection: "column",
@@ -159,7 +201,7 @@ export default function Cart(props) {
                                 placeholder="Ulica"
                                 required={true}
                             />
-                            <Button>
+                            <Button type="submit">
                                 Złóż zamówienie
                             </Button>
                         </form>

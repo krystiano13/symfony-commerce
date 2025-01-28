@@ -47,6 +47,9 @@ class Order
     #[ORM\Column(enumType: OrderStatusEnum::class)]
     private ?OrderStatusEnum $status = null;
 
+    #[ORM\Column(length: 9999)]
+    private ?string $products = null;
+
     public function __construct()
     {
         $this->orderedProducts = new ArrayCollection();
@@ -179,6 +182,18 @@ class Order
     public function setStatus(OrderStatusEnum $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getProducts(): ?string
+    {
+        return $this->products;
+    }
+
+    public function setProducts(string $products): static
+    {
+        $this->products = $products;
 
         return $this;
     }

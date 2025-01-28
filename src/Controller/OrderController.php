@@ -19,13 +19,16 @@ final class OrderController extends AbstractController
     private SerializerInterface $serializer;
     private ValidatorInterface $validator;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator)
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $entityManager)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->entityManager = $entityManager;
     }
 
-    #[Route('/order', name: 'app_order')]
+    #[Route('/order', name: 'app_order', methods: ['GET'])]
     public function index(OrderRepository $orderRepository): Response
     {
         $data = $orderRepository->findAll();

@@ -25,7 +25,7 @@ const Main = styled.main`
 
 export default function Admin(props) {
     const [products, setProducts] = useState([]);
-    const [orders] = useState([]);
+    const [orders, setOrders] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [createFormOpen, setCreateFormOpen] = useState(false);
     const [editFormOpen, setEditFormOpen] = useState(false);
@@ -97,12 +97,20 @@ export default function Admin(props) {
             })
     }
 
+    function getOrders() {
+        fetch('/order', { method: "GET" })
+            .then(res => res.json())
+            .then(data => {
+                //setOrders([...data.orders]);
+                console.log(data)
+            })
+    }
+
     async function handleCreate(e, id = -1) {
         e.preventDefault();
         const data = new FormData(e.target);
 
         data.append("image", selectedFile);
-        console.log(createFormOpen ? '/products' : `/products/${id}`)
 
         await fetch(createFormOpen ? '/products' : `/products/${id}`, {
             method: "POST",
@@ -143,6 +151,7 @@ export default function Admin(props) {
 
     useEffect(() => {
       getProducts();
+      getOrders();
     }, [])
 
     return (
