@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CartRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CartRepository::class)]
 class Cart
@@ -14,12 +15,16 @@ class Cart
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\Assert\NotNull]
     private ?int $user_id = null;
 
     #[ORM\Column]
+    #[Assert\Assert\NotNull]
     private ?int $product_id = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\Length(min: 0)]
     private ?int $amount = null;
 
     public function getId(): ?int
