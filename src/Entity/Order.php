@@ -7,6 +7,7 @@ use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -18,24 +19,31 @@ class Order
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $town = null;
 
     #[ORM\Column(length: 6)]
+    #[Assert\NotBlank]
     private ?string $postal_code = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $address = null;
 
     #[ORM\ManyToOne(inversedBy: 'orders')]
+    #[Assert\NotNull]
     private ?User $user_id = null;
 
     #[ORM\Column]
+    #[Assert\Assert\Length(min: 0.01)]
     private ?float $full_price = null;
 
     /**
@@ -45,6 +53,7 @@ class Order
     private Collection $orderedProducts;
 
     #[ORM\Column(enumType: OrderStatusEnum::class)]
+    #[Assert\NotBlank]
     private ?OrderStatusEnum $status = null;
 
     #[ORM\Column(length: 9999)]
