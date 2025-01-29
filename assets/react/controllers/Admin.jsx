@@ -42,7 +42,6 @@ export default function Admin(props) {
     const [orders, setOrders] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [createFormOpen, setCreateFormOpen] = useState(false);
-    const [detailsOpen, setDetailsOpen] = useState(false);
     const [editFormOpen, setEditFormOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [productsLoading, setProductsLoading] = useState(false);
@@ -97,9 +96,33 @@ export default function Admin(props) {
         )
     }, []);
 
-    const orderAction = useCallback((id, status) => {
+    const orderAction = useCallback((id, status, orders) => {
+        const [details, setDetails] = useState({ products: "[]" });
+        const [detailsOpen, setDetailsOpen] = useState(false);
+        const [productList, setProductList] = useState([]);
+
+        useEffect(() => {
+            if(details.products) {
+                setProductList(JSON.parse(details.products))
+            }
+        }, [details])
+
         return (
             <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
+                <Dialog
+                    header="Szczegóły Zamówienia"
+                    style={{ width: "30rem" }}
+                    visible={detailsOpen}
+                    onHide={() => {
+                        setDetailsOpen(false)
+                    }}
+                >
+                    {
+                        productList.map(item => (
+                            <p>{item.name} x { item.amount }</p>
+                        ))
+                    }
+                </Dialog>
                 <Button
                     disabled={status !== "Not sent"}
                     onClick={() => handleSetAsDelivered(id)}
@@ -109,7 +132,11 @@ export default function Admin(props) {
                     }
                 </Button>
                 <Button
-                    onClick={() => setDetailsOpen(true)}
+                    onClick={() => {
+                        setDetailsOpen(true)
+                        setDetails(orders[orders.findIndex(item => item.id === id)]);
+                        console.log(details);
+                    }}
                 >
                     Szczegóły
                 </Button>
@@ -203,14 +230,6 @@ export default function Admin(props) {
         <Layout user={props.user}>
             <Toast ref={toastRef} />
             <ConfirmPopup />
-            <Dialog
-                header="Szczegóły Zamówienia"
-                style={{ width: "30rem" }}
-                visible={detailsOpen}
-                onHide={() => {
-                    setDetailsOpen(false)
-                }}
-            />
             <Dialog
                 header={ editFormOpen ? "Edytuj Produkt" : "Stwórz nowy produkt" }
                 style={{ width: "30rem" }}
@@ -335,7 +354,7 @@ export default function Admin(props) {
                                 <Column field="postalCode" header="Kod Pocztowy"></Column>
                                 <Column field="fullPrice" header="Cena"></Column>
                                 <Column field="town" header="Miejscowość"></Column>
-                                <Column header="Akcje" body={(rowData) => orderAction(rowData.id, rowData.status)}></Column>
+                                <Column header="Akcje" body={(rowData) => orderAction(rowData.id, rowData.status, orders)}></Column>
                             </DataTable>
                         </Card>
                     }
