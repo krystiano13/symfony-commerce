@@ -42,6 +42,7 @@ export default function Admin(props) {
     const [orders, setOrders] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [createFormOpen, setCreateFormOpen] = useState(false);
+    const [detailsOpen, setDetailsOpen] = useState(false);
     const [editFormOpen, setEditFormOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [productsLoading, setProductsLoading] = useState(false);
@@ -98,14 +99,21 @@ export default function Admin(props) {
 
     const orderAction = useCallback((id, status) => {
         return (
-            <Button
-                disabled={status !== "Not sent"}
-                onClick={() => handleSetAsDelivered(id)}
-            >
-                {
-                    status === "Not sent" ? "Oznacz jako zrealizowany" : "Przesyłka wysłana"
-                }
-            </Button>
+            <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
+                <Button
+                    disabled={status !== "Not sent"}
+                    onClick={() => handleSetAsDelivered(id)}
+                >
+                    {
+                        status === "Not sent" ? "Oznacz jako zrealizowany" : "Przesyłka wysłana"
+                    }
+                </Button>
+                <Button
+                    onClick={() => setDetailsOpen(true)}
+                >
+                    Szczegóły
+                </Button>
+            </div>
         )
     }, [])
 
@@ -124,7 +132,6 @@ export default function Admin(props) {
         fetch('/order', { method: "GET" })
             .then(res => res.json())
             .then(data => {
-                console.log(data);
                 setOrders([...data.orders]);
                 setOrdersLoading(false);
             })
@@ -178,9 +185,6 @@ export default function Admin(props) {
                 }
                 return res.json();
             })
-            .then(data => {
-                console.log(data)
-            })
     }
 
     async function handleDelete(id) {
@@ -199,6 +203,14 @@ export default function Admin(props) {
         <Layout user={props.user}>
             <Toast ref={toastRef} />
             <ConfirmPopup />
+            <Dialog
+                header="Szczegóły Zamówienia"
+                style={{ width: "30rem" }}
+                visible={detailsOpen}
+                onHide={() => {
+                    setDetailsOpen(false)
+                }}
+            />
             <Dialog
                 header={ editFormOpen ? "Edytuj Produkt" : "Stwórz nowy produkt" }
                 style={{ width: "30rem" }}
